@@ -1,3 +1,17 @@
+use druid::widget::Label;
+use druid::{AppLauncher, Widget, WindowDesc};
+
+fn build_ui() -> impl Widget<()> {
+    Label::new("let's build a calculator")
+}
+
 fn main() {
-    println!("Hello, world!");
+    let main_window = WindowDesc::new(build_ui())
+        .window_size((600.0, 400.0))
+        .title("x-calc");
+    let initial_data = ();
+
+    AppLauncher::with_window(main_window)
+        .launch(initial_data)
+        .expect("Failed to launch application");
 }
