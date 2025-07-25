@@ -1,64 +1,43 @@
-const { readFileSync } = require("fs");
 const express = require("express");
-const http = require("http");
 
 const app = express();
 const port = 3000;
+const log = console.log;
 
-const homePage = readFileSync(
-  "./node-express-course/02-express-tutorial/navbar-app/index.html"
-);
-const homeStyles = readFileSync(
-  "./node-express-course/02-express-tutorial/navbar-app/styles.css"
-);
-const homeLogic = readFileSync(
-  "./node-express-course/02-express-tutorial/navbar-app/browser-app.js"
-);
-const homeLogo = readFileSync(
-  "./node-express-course/02-express-tutorial/navbar-app/logo.svg"
-);
+const { products } = require("./data.js");
 
-const server = http.createServer((req, res) => {
-  const url = req.url;
-  console.log(url);
-  if (url === "/") {
-    res.writeHead(200, { "content-type": "text/html" });
-    res.write(homePage);
-    res.end();
-  } else if (url === "/styles.css") {
-    res.writeHead(200, { "content-type": "text/css" });
-    res.write(homeStyles);
-    res.end();
-  } else if (url === "/browser-app.js") {
-    res.writeHead(200, { "content-type": "text/javascript" });
-    res.write(homeLogic);
-    res.end();
-  } else if (url === "/logo.svg") {
-    res.writeHead(200, { "content-type": "image/svg+xml" });
-    res.write(homeLogo);
-    res.end();
-  }
+app.get("/", (req, res) => {
+  res.send("<h1>Home Page</h1><a href='/api/products'>Products</a>");
 });
 
-// app.get("/", (req, res) => {
-//   const url = req.url;
-//   console.log(url);
+app.get("/api/products", (req, res) => {
+  res.json(products);
+});
 
-//   if (url === "/") {
-//     res.writeHead(200, { "content-type": "text/html" });
-//     res.write(homePage);
-//     res.end();
-//   } else if (url === "/styles.css") {
-//     res.writeHead(200, { "content-type": "text/css" });
-//     res.write(homeStyles);
-//     res.end();
-//   }
-// });
+app.get("/api/products/:productID", (req, res) => {
+  const { productID } = req.params;
+  const product = products.find((product) => product.id === Number(productID));
 
-// app.listen(port, () => {
-//   console.log(`open http://localhost:${port}/\n`);
-// });
+  if (!product) {
+    return res.status(404).send("<h1>Product not found</h1>");
+  }
 
-server.listen(port, () => {
-  console.log(`open http://localhost:${port}/\n`);
+  log(req.params);
+  res.json(product);
+});
+
+app.get("/api/v1/:id/name/:name", (req, res) => {
+  const params = req.params;
+  log(params);
+  res.send(`<h1>hello user ${params.name} with id ${params.id}</h1>`);
+});
+
+app.get("/api/v1/query", (req, res) => {
+  const query = req.query;
+  log(query);
+  res.send('some query')
+});
+
+app.listen(port, () => {
+  log(`Server is running on http://localhost:${port}`);
 });
