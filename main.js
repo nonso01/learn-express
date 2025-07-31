@@ -34,6 +34,27 @@ app.post("/login", (req, res) => {
   }
 });
 
+app.post("/api/postman/people", (req, res) => {
+  const { name } = req?.body;
+  if (!name) {
+    return res
+      .status(400)
+      .json({ success: false, message: "please provide a name" });
+  }
+  res.status(201).json({
+    success: true,
+    data: [...people, name],
+  });
+});
+
+app.put("/api/people/:id", (req, res) => {
+  const { id } = req.params;
+  const { name } = req?.body;
+  log({ id, name });
+
+  res.send(`user with id: ${id}, and name: ${name}`);
+});
+
 app.listen(port, () => {
   log(`Server is running on http://localhost:${port}`);
 });
